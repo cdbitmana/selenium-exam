@@ -37,7 +37,7 @@ public class Main {
 		List<String> tabs = new ArrayList<String>(driver.getWindowHandles());
 
 		driver.switchTo().window(tabs.get(0));
-		driver.get("https://unsplash.com/t/nature");
+		driver.get("https://www.naver.com/");
 
 		File downloadsFolder = new File("downloads");
 
@@ -47,31 +47,13 @@ public class Main {
 
 		Util.sleep(1000);
 
-		List<WebElement> imgElements = driver.findElements(
-				By.cssSelector("[data-test=\"masonry-grid-count-three\"] img[data-test=\"photo-grid-multi-col-img\"]"));
-
-		for (WebElement imgElement : imgElements) {
-			String src = imgElement.getAttribute("src");
-
-			BufferedImage saveImage = null;
-
-			try {
-				saveImage = ImageIO.read(new URL(src));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			if (saveImage != null) {
-				try {
-
-					String fileName = src.split("/")[3];
-					fileName = fileName.split("\\?")[0];
-					ImageIO.write(saveImage, "jpg", new File("downloads/" + fileName + ".jpg"));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
+		
+		WebElement news = driver.findElement(By.cssSelector("#NM_NEWSSTAND_view_buttons a:first-child"));
+		news.click();
+		List<WebElement> titleElements = driver.findElements(By.cssSelector(".list_news li a"));
+		for (WebElement titleElement : titleElements) {
+			String src = titleElement.getText();
+			
 			System.out.println(src);
 		}
 
