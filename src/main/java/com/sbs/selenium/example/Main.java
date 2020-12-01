@@ -47,14 +47,32 @@ public class Main {
 
 		Util.sleep(1000);
 
+		WebElement filter = driver.findElement(By.cssSelector(".link_keyword"));
+		filter.click();
+		filter = driver.findElement(By.cssSelector(".list_filter .filter_item:nth-child(1) a:nth-child(3)"));
+		filter.click();
+		filter = driver.findElement(By.cssSelector(".list_filter .filter_item:nth-child(2) a:nth-child(3)"));
+		filter.click();
+		filter = driver.findElement(By.cssSelector(".list_filter .filter_item:nth-child(3) a:nth-child(3)"));
+		filter.click();
+		filter = driver.findElement(By.cssSelector(".list_filter .filter_item:nth-child(4) a:nth-child(3)"));
+		filter.click();
+		filter = driver.findElement(By.cssSelector(".list_filter .filter_item:nth-child(5) a:nth-child(3)"));
+		filter.click();
+		filter = driver.findElement(By.cssSelector(".filter_area .list_age_wrap .list_age li:nth-child(2)"));
+		filter.click();
+		filter = driver.findElement(By.cssSelector("button.btn_set"));
+		filter.click();
+		List<WebElement> titleElements = driver.findElements(By.cssSelector("div#NM_RTK_VIEW_list_wrap div:nth-child(2) ul:first-of-type.list_realtime a.link_keyword span.keyword"));
 		
-		WebElement news = driver.findElement(By.cssSelector("#NM_NEWSSTAND_view_buttons a:first-child"));
-		news.click();
-		List<WebElement> titleElements = driver.findElements(By.cssSelector(".list_news li a"));
 		for (WebElement titleElement : titleElements) {
+			
 			String src = titleElement.getText();
 			
 			System.out.println(src);
+			
+			
+			
 		}
 
 	}
