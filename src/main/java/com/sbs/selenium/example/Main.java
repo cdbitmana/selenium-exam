@@ -18,14 +18,64 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import com.sbs.selenium.example.dto.DCinsideArticle;
+import com.sbs.selenium.example.dto.DaumNewsArticle;
 import com.sbs.selenium.example.dto.NaverNewsArticle;
 
 public class Main {
 
 	public static void main(String[] args) {
 
-		printNaverNewsFirstPage();
+		printDaumNews();
 
+	}
+
+	private static void printDaumNews() {
+		Path path = Paths.get(System.getProperty("user.dir"), "src/main/resources/chromedriver.exe");
+
+		// WebDriver 경로 설정
+		System.setProperty("webdriver.chrome.driver", path.toString());
+
+		// WebDriver 옵션 설정
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--start-maximized"); // 전체화면으로 실행
+		options.addArguments("--disable-popup-blocking"); // 팝업 무시
+		options.addArguments("--disable-default-apps"); // 기본앱 사용안함
+
+		// WebDriver 객체 생성
+		ChromeDriver driver = new ChromeDriver(options);
+
+		List<String> tabs = new ArrayList<String>(driver.getWindowHandles());
+
+		driver.switchTo().window(tabs.get(0));
+		driver.get("https://news.daum.net/society#1");
+		
+		Util.sleep(1000);
+		
+		List<WebElement> articlesElements = driver.findElements(By.cssSelector(".list_timenews li"));
+		List<DaumNewsArticle> articles = new ArrayList<>();
+		
+		for(WebElement articleElement : articlesElements) {
+			String code = articleElement.findElement(By.cssSelector(".tit_timenews a")).getAttribute("href");
+			code = code.split("v/")[1];
+			String date = articleElement.findElement(By.cssSelector(".txt_time")).getText().trim();
+			String title = articleElement.findElement(By.cssSelector(".tit_timenews a")).getText().trim();
+			
+			articles.add(new DaumNewsArticle(code,date,title));
+			
+		}
+		
+		for(int i = 0 ; i < articles.size() ; i++) {
+			String code = articles.get(i).getCode();
+			String date = articles.get(i).getDate();
+			String title = articles.get(i).getTitle();
+			System.out.println("--");
+			System.out.printf("번호 : %s\n",code);
+			System.out.printf("날짜 : %s\n",date);
+			System.out.printf("제목 : %s\n",title);
+			System.out.println("--");
+		}
+
+		
 	}
 
 	private static void printNaverNewsFirstPage() {
@@ -132,17 +182,44 @@ public class Main {
 		driver.switchTo().window(tabs.get(0));
 		driver.get("https://gall.dcinside.com/board/lists/?id=tree");
 
-		File file = new File("downloads");
+		File file = new File("downloads/DCInsideTreeGallery");
 		if (file.exists() == false) {
-			file.mkdir();
+			file.mkdirs();
 		}
 
 		Util.sleep(1000);
 
-		WebElement firstArticle = driver.findElement(By.cssSelector("tbody tr:first-of-type.ub-content.us-post"));
+		List<WebElement> firstArticles = driver.findElements(By.cssSelector("tbody tr.ub-content.us-post"));
+		WebElement firstArticle = firstArticles.get(0);
+		firstArticle = firstArticle.findElement(By.cssSelector("td.gall_tit.ub-word a"));
 		firstArticle.click();
+		
+		WebElement Thumbnail = null;
+		try {
+			Thumbnail = driver.findElement(By.cssSelector("article .gallview_contents .writing_view_box div:nth-child(3) > div:first-child > img"));	
+		}catch ( NoSuchElementException e) {
+			return;
+		}
+		
+		String src = Thumbnail.getAttribute("src");
+		
+		BufferedImage saveImage = null;
 
-		WebElement Thumbnail = driver.findElement(By.cssSelector("article .gallview_contents .writing_view_box "));
+		try {
+			saveImage = ImageIO.read(new URL(src));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (saveImage != null) {
+			try {
+				String fileName = src;
+				ImageIO.write(saveImage, "jpg", new File("downloads/DCInsideTreeGallery/" + fileName + ".jpg"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 
 	}
 
