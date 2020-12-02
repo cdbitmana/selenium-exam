@@ -25,7 +25,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		printDaumNews();
+		downloadDCInsideTreeGalleryFristArticleThumbnail();
 
 	}
 
@@ -48,34 +48,33 @@ public class Main {
 
 		driver.switchTo().window(tabs.get(0));
 		driver.get("https://news.daum.net/society#1");
-		
+
 		Util.sleep(1000);
-		
+
 		List<WebElement> articlesElements = driver.findElements(By.cssSelector(".list_timenews li"));
 		List<DaumNewsArticle> articles = new ArrayList<>();
-		
-		for(WebElement articleElement : articlesElements) {
+
+		for (WebElement articleElement : articlesElements) {
 			String code = articleElement.findElement(By.cssSelector(".tit_timenews a")).getAttribute("href");
 			code = code.split("v/")[1];
 			String date = articleElement.findElement(By.cssSelector(".txt_time")).getText().trim();
 			String title = articleElement.findElement(By.cssSelector(".tit_timenews a")).getText().trim();
-			
-			articles.add(new DaumNewsArticle(code,date,title));
-			
+
+			articles.add(new DaumNewsArticle(code, date, title));
+
 		}
-		
-		for(int i = 0 ; i < articles.size() ; i++) {
+
+		for (int i = 0; i < articles.size(); i++) {
 			String code = articles.get(i).getCode();
 			String date = articles.get(i).getDate();
 			String title = articles.get(i).getTitle();
 			System.out.println("--");
-			System.out.printf("번호 : %s\n",code);
-			System.out.printf("날짜 : %s\n",date);
-			System.out.printf("제목 : %s\n",title);
+			System.out.printf("번호 : %s\n", code);
+			System.out.printf("날짜 : %s\n", date);
+			System.out.printf("제목 : %s\n", title);
 			System.out.println("--");
 		}
 
-		
 	}
 
 	private static void printNaverNewsFirstPage() {
@@ -193,16 +192,13 @@ public class Main {
 		WebElement firstArticle = firstArticles.get(0);
 		firstArticle = firstArticle.findElement(By.cssSelector("td.gall_tit.ub-word a"));
 		firstArticle.click();
-		
+
 		WebElement Thumbnail = null;
-		try {
-			Thumbnail = driver.findElement(By.cssSelector("article .gallview_contents .writing_view_box div:nth-child(3) > div:first-child > img"));	
-		}catch ( NoSuchElementException e) {
-			return;
-		}
-		
+
+		Thumbnail = driver.findElement(By.cssSelector(".gallview_contents .writing_view_box div:nth-child(3) img"));
+
 		String src = Thumbnail.getAttribute("src");
-		
+
 		BufferedImage saveImage = null;
 
 		try {
@@ -219,7 +215,6 @@ public class Main {
 				e.printStackTrace();
 			}
 		}
-		
 
 	}
 
