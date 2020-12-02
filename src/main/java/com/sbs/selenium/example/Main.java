@@ -16,10 +16,17 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import com.sbs.selenium.example.dto.DCinsideArticle;
+
 public class Main {
 
 	public static void main(String[] args) {
 
+		printDCInsideTreeGalleryLatestArticles();
+
+	}
+
+	private static void printDCInsideTreeGalleryLatestArticles() {
 		Path path = Paths.get(System.getProperty("user.dir"), "src/main/resources/chromedriver.exe");
 
 		// WebDriver 경로 설정
@@ -37,43 +44,41 @@ public class Main {
 		List<String> tabs = new ArrayList<String>(driver.getWindowHandles());
 
 		driver.switchTo().window(tabs.get(0));
-		driver.get("https://www.naver.com/");
+		driver.get("https://gall.dcinside.com/board/lists/?id=tree");
 
-		File downloadsFolder = new File("downloads");
-
-		if (downloadsFolder.exists() == false) {
-			downloadsFolder.mkdir();
+		File file = new File("downloads");
+		if (file.exists() == false) {
+			file.mkdir();
 		}
 
 		Util.sleep(1000);
 
-		WebElement filter = driver.findElement(By.cssSelector(".link_keyword"));
-		filter.click();
-		filter = driver.findElement(By.cssSelector(".list_filter .filter_item:nth-child(1) a:nth-child(3)"));
-		filter.click();
-		filter = driver.findElement(By.cssSelector(".list_filter .filter_item:nth-child(2) a:nth-child(3)"));
-		filter.click();
-		filter = driver.findElement(By.cssSelector(".list_filter .filter_item:nth-child(3) a:nth-child(3)"));
-		filter.click();
-		filter = driver.findElement(By.cssSelector(".list_filter .filter_item:nth-child(4) a:nth-child(3)"));
-		filter.click();
-		filter = driver.findElement(By.cssSelector(".list_filter .filter_item:nth-child(5) a:nth-child(3)"));
-		filter.click();
-		filter = driver.findElement(By.cssSelector(".filter_area .list_age_wrap .list_age li:nth-child(2)"));
-		filter.click();
-		filter = driver.findElement(By.cssSelector("button.btn_set"));
-		filter.click();
-		List<WebElement> titleElements = driver.findElements(By.cssSelector("div#NM_RTK_VIEW_list_wrap div:nth-child(2) ul:first-of-type.list_realtime a.link_keyword span.keyword"));
-		
-		for (WebElement titleElement : titleElements) {
-			
-			String src = titleElement.getText();
-			
-			System.out.println(src);
-			
-			
-			
+		List<WebElement> articlesElements = driver.findElements(By.cssSelector("tbody .ub-content.us-post"));
+		List<DCinsideArticle> articles = new ArrayList<>();
+		for (WebElement articleElement : articlesElements) {
+			int id = Integer.parseInt(articleElement.findElement(By.cssSelector(".gall_num")).getText().trim());
+			String title = articleElement.findElement(By.cssSelector(".gall_tit")).getText().trim();
+			String writer = articleElement.findElement(By.cssSelector(".gall_writer")).getText().trim();
+			String date = articleElement.findElement(By.cssSelector(".gall_date")).getText().trim();
+			int count = Integer.parseInt(articleElement.findElement(By.cssSelector(".gall_count")).getText().trim());
+			int recommend = Integer
+					.parseInt(articleElement.findElement(By.cssSelector(".gall_recommend")).getText().trim());
+			articles.add(new DCinsideArticle(id, title, writer, date, count, recommend));
+		}
+
+		System.out.println("==디시인사이드 식물갤 게시물 최신글 리스트==");
+		System.out.println("번호 / 제목 / 작성자 / 작성일 / 조회수 / 추천수");
+
+		for (int i = 0; i < articles.size(); i++) {
+			int id = articles.get(i).getId();
+			String title = articles.get(i).getTitle();
+			String writer = articles.get(i).getWriter();
+			String date = articles.get(i).getDate();
+			int hit = articles.get(i).getHit();
+			int recommend = articles.get(i).getRecommend();
+			System.out.printf("%d / %s / %s / %s / %d / %d\n", id, title, writer, date, hit, recommend);
 		}
 
 	}
+
 }
