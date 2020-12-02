@@ -11,4 +11,23 @@ public class Util {
 		
 	}
 
+	public static int getAsInt(String str) {
+		if(str == null) {
+			return 0;
+		}
+		
+		str = str.trim();
+		
+		if(str.length() == 0) {
+			return 0;
+		}
+		
+		str = str.replaceAll(",", "");
+		
+		return Integer.parseInt(str);
+		
+		
+		
+	}
+
 }
